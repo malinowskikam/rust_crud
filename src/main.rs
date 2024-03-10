@@ -1,35 +1,16 @@
-use std::convert::Infallible;
-use std::net::SocketAddr;
+use actix_web::{get, web, App, HttpServer, Responder};
 
-use http_body_util::Full;
-use hyper::body::Bytes;
-use hyper::server::conn::http1;
-use hyper::service::service_fn;
-use hyper::{Request, Response};
-use hyper_util::rt::TokioIo;
-use tokio::net::TcpListener;
-
-async fn hello(req: Request<hyper::body::Incoming>) -> Result<Response<Full<Bytes>>, Infallible> {
-    println!("[{}] {}", req.method(), req.uri());
-    Ok(Response::new("Hello, world!".into()))
+#[get("/hello/{name}")]
+async fn greet(name: web::Path<String>) -> impl Responder {
+    format!("Hello {name}!")
 }
 
-#[tokio::main]
-async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
-    let addr = SocketAddr::from(([127, 0, 0, 1], 8000));
-    let listener = TcpListener::bind(&addr).await?;
-    println!("Listening on http://{}", addr);
-    loop {
-        let (stream, _) = listener.accept().await?;
-
-        let io = TokioIo::new(stream);
-        tokio::spawn(async move {
-            if let Err(e) = http1::Builder::new()
-                .serve_connection(io, service_fn(hello))
-                .await
-            {
-                eprintln!("[Error]: {}", e);
-            }
-        });
-    }
+#[tokio::main] // or #[tokio::main]
+async fn main() -> std::io::Result<()> {
+    HttpServer::new(|| {
+        App::new().service(greet)
+    })
+    .bind(("127.0.0.1", 8080))?
+    .run()
+    .await
 }
