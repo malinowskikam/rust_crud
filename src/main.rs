@@ -1,16 +1,24 @@
-use actix_web::{get, web, App, HttpServer, Responder};
+mod api;
+pub mod models;
+pub mod state;
+pub mod util;
 
-#[get("/hello/{name}")]
-async fn greet(name: web::Path<String>) -> impl Responder {
-    format!("Hello {name}!")
-}
+use actix_web::{web, App, HttpServer};
+use api::users::users_service;
+use state::AppState;
 
-#[tokio::main] // or #[tokio::main]
-async fn main() -> std::io::Result<()> {
-    HttpServer::new(|| {
-        App::new().service(greet)
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error + Sync + Send>> {
+    let state = AppState::init().await?;
+
+    HttpServer::new(move || {
+        App::new()
+            .app_data(web::Data::new(state.clone()))
+            .service(web::scope("/api").service(users_service()))
     })
     .bind(("127.0.0.1", 8080))?
     .run()
-    .await
+    .await?;
+
+    Ok(())
 }
