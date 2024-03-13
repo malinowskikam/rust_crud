@@ -1,11 +1,14 @@
 mod api;
 pub mod models;
-pub mod state;
 pub mod util;
+pub mod core;
+pub mod dto;
+pub mod services;
 
-use actix_web::{web, App, HttpServer};
-use api::users::users_service;
-use state::AppState;
+use actix_web::{web::{self, JsonConfig, PathConfig}, App, HttpServer};
+
+use api::user::users_service;
+use core::{errors::{path_error_handler, json_error_handler}, state::AppState};
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error + Sync + Send>> {
@@ -14,6 +17,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Sync + Send>> {
     HttpServer::new(move || {
         App::new()
             .app_data(web::Data::new(state.clone()))
+            .app_data(PathConfig::default().error_handler(path_error_handler))
+            .app_data(JsonConfig::default().error_handler(json_error_handler))
             .service(web::scope("/api").service(users_service()))
     })
     .bind(("127.0.0.1", 8080))?

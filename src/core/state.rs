@@ -9,7 +9,7 @@ pub struct AppState {
 async fn create_db_pool() -> Result<sqlx::PgPool, Box<dyn std::error::Error + Sync + Send>> {
     let pool = PgPoolOptions::new()
         .max_connections(5)
-        .connect(&env_var("DATABASE_URL")?)
+        .connect(&env_var("DATABASE_URL").map_err(|_| "DATABASE_URL is not set")?)
         .await?;
 
     Ok(pool)
