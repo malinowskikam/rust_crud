@@ -1,14 +1,20 @@
 mod api;
-pub mod models;
-pub mod util;
 pub mod core;
 pub mod dto;
+pub mod models;
 pub mod services;
+pub mod util;
 
-use actix_web::{web::{self, JsonConfig, PathConfig}, App, HttpServer};
+use actix_web::{
+    web::{self, JsonConfig, PathConfig},
+    App, HttpServer,
+};
 
 use api::user::users_service;
-use core::{errors::{path_error_handler, json_error_handler}, state::AppState};
+use core::{
+    errors::{json_error_handler, path_error_handler},
+    state::AppState,
+};
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error + Sync + Send>> {

@@ -1,13 +1,10 @@
 use actix_web::Result;
-use argon2::{
-    password_hash::{rand_core::OsRng, PasswordHasher, SaltString},
-    Argon2,
-};
+
 use sqlx::PgPool;
 use uuid::Uuid;
 
 use crate::{
-    core::errors::ApiError,
+    core::{auth::generate_password_hash, errors::ApiError},
     dto::user::UserPayload,
     models::user::User,
 };
@@ -70,15 +67,4 @@ pub async fn update_user(pool: &PgPool, id: &Uuid, user: &UserPayload) -> Result
         Ok(_) => Ok(()),
         Err(_) => Err(ApiError::InternalServerError.into()),
     }
-}
-
-fn generate_password_hash(password: &str) -> Result<String> {
-    let password_salt = SaltString::generate(&mut OsRng);
-    let argon2 = Argon2::default();
-    let password_hash = argon2
-        .hash_password(password.as_bytes(), &password_salt)
-        .map_err(|_| ApiError::InternalServerError)?
-        .to_string();
-
-    Ok(password_hash)
 }

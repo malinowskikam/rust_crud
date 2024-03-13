@@ -1,5 +1,5 @@
-use std::fmt;
 use actix_web::ResponseError;
+use std::fmt;
 
 #[derive(Debug)]
 pub struct UuidParseFailed;

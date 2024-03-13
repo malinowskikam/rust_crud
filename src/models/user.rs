@@ -1,12 +1,9 @@
 use serde::{Deserialize, Serialize};
-use sqlx::{
-    prelude::FromRow,
-    types::Uuid
-};
+use sqlx::{prelude::FromRow, types::Uuid};
 
-#[derive(Serialize, Deserialize, FromRow, Debug)]
+#[derive(Serialize, Deserialize, FromRow, Debug, Clone)]
 pub struct User {
-    pub id: Option<Uuid>,
-    pub username: Option<String>,
-    pub password_hash: Option<String>,
+    pub id: Uuid,
+    pub username: String,
+    pub password_hash: String,
 }

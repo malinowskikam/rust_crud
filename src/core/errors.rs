@@ -41,10 +41,16 @@ impl fmt::Display for ApiError {
     }
 }
 
-pub fn path_error_handler(_err: actix_web::error::PathError, _req: &actix_web::HttpRequest) -> actix_web::error::Error {
+pub fn path_error_handler(
+    _err: actix_web::error::PathError,
+    _req: &actix_web::HttpRequest,
+) -> actix_web::error::Error {
     ApiError::BadRequest.into()
 }
 
-pub fn json_error_handler(_err: actix_web::error::JsonPayloadError, _req: &actix_web::HttpRequest) -> actix_web::error::Error {
+pub fn json_error_handler(
+    _err: actix_web::error::JsonPayloadError,
+    _req: &actix_web::HttpRequest,
+) -> actix_web::error::Error {
     ApiError::BadRequest.into()
 }
