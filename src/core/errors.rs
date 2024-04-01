@@ -25,7 +25,12 @@ impl ResponseError for ApiError {
             ApiError::NotFound => HttpResponse::NotFound().finish(),
             ApiError::BadRequest => HttpResponse::BadRequest().finish(),
             ApiError::InternalServerError => HttpResponse::InternalServerError().finish(),
-            ApiError::Unauthorized => HttpResponse::Unauthorized().append_header(("WWW-Authenticate", r#"Basic realm="User Visible Realm", charset="UTF-8""#)).finish(),
+            ApiError::Unauthorized => HttpResponse::Unauthorized()
+                .append_header((
+                    "WWW-Authenticate",
+                    r#"Basic realm="User Visible Realm", charset="UTF-8""#,
+                ))
+                .finish(),
         }
     }
 }

@@ -27,7 +27,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Sync + Send>> {
             .app_data(JsonConfig::default().error_handler(json_error_handler))
             .service(web::scope("/api").service(users_service()))
     })
-    .bind(("127.0.0.1", 8080))?
+    .bind(("127.0.0.1", 8000))?
     .run()
     .await?;
 

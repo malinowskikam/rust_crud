@@ -27,3 +27,6 @@ target/
 *.vsix
 
 .env
+
+# docker volume for db data
+db_data/

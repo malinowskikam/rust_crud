@@ -44,23 +44,22 @@ impl FromRequest for User {
 }
 
 async fn header_auth(pool: &PgPool, auth: &str) -> Option<User> {
-    let parts: Vec<&str> = auth.splitn(2, ' ').collect();
-    if parts.len() != 2 {
-        return None;
-    }
+    let mut split = auth.splitn(2, ' ');
+    let token_type = split.next()?;
+    let token = split.next()?;
 
-    if parts[0] == "Basic" {
-        let decoded = b64.decode(parts[1]).ok()?;
+    if token_type == "Basic" {
+        let decoded = b64.decode(token).ok()?;
         let decoded = String::from_utf8(decoded).ok()?;
-        let parts: Vec<&str> = decoded.splitn(2, ':').collect();
-        if parts.len() != 2 {
-            return None;
-        }
+        let mut split = decoded.splitn(2, ':');
+        let username = split.next()?;
+        let password = split.next()?;
+
         let user = login(
             pool,
             &LoginPayload {
-                username: parts[0].to_string(),
-                password: parts[1].to_string(),
+                username: username.to_string(),
+                password: password.to_string(),
             },
         )
         .await
